@@ -1,0 +1,6 @@
+stages:
+  - local
+ssm:
+  /params/someparam:
+    Type: String
+    Value: some-local-value

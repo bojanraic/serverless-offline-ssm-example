@@ -1,0 +1,35 @@
+service: sls-offline-ssm
+frameworkVersion: '2'
+configValidationMode: error
+variablesResolutionMode: 20210326
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221  
+  stage: ${opt:stage, 'local'}
+  region: ${opt:region, 'us-east-1'}
+
+plugins:
+  - serverless-offline
+  - ./plugins/offline-ssm
+
+package:
+  patterns:
+    - '!./**'
+    - 'src/**'
+
+custom: 
+  offlineSSM: 
+    ${file(./config/offline-ssm.yml)}
+  
+functions:
+  fun:
+    handler: 
+      src/handler.main
+    events:
+      - http:
+         path: /
+         method: get
+    environment:
+      PARAM_VALUE: ${ssm:/params/someparam}
